@@ -40,9 +40,16 @@ class Event
     #[ORM\OneToMany(targetEntity: Volunteer::class, mappedBy: 'event')]
     private Collection $volunteers;
 
+    /**
+     * @var Collection<int, Organization>
+     */
+    #[ORM\ManyToMany(targetEntity: Organization::class, mappedBy: 'events')]
+    private Collection $organizations;
+
     public function __construct()
     {
         $this->volunteers = new ArrayCollection();
+        $this->organizations = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -147,6 +154,33 @@ class Event
             if ($volunteer->getEvent() === $this) {
                 $volunteer->setEvent(null);
             }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Organization>
+     */
+    public function getOrganizations(): Collection
+    {
+        return $this->organizations;
+    }
+
+    public function addOrganization(Organization $organization): static
+    {
+        if (!$this->organizations->contains($organization)) {
+            $this->organizations->add($organization);
+            $organization->addEvent($this);
+        }
+
+        return $this;
+    }
+
+    public function removeOrganization(Organization $organization): static
+    {
+        if ($this->organizations->removeElement($organization)) {
+            $organization->removeEvent($this);
         }
 
         return $this;
