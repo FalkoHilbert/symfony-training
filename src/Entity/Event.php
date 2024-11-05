@@ -9,7 +9,7 @@ use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: EventRepository::class)]
-class Event
+class Event implements \JsonSerializable
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
@@ -200,5 +200,18 @@ class Event
         $this->project = $project;
 
         return $this;
+    }
+
+    public function jsonSerialize(): array
+    {
+        return [
+            'id' => $this->id,
+            'name' => $this->name,
+            'description' => $this->description,
+            'isAccessible' => $this->isAccessible,
+            'prerequisites' => $this->prerequisites,
+            'startAt' => $this->startAt,
+            'endAt' => $this->endAt
+        ];
     }
 }

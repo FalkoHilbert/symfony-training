@@ -3,8 +3,10 @@
 namespace App\Repository;
 
 use App\Entity\Event;
+use DateTimeImmutable;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
+use InvalidArgumentException;
 
 /**
  * @extends ServiceEntityRepository<Event>
@@ -16,28 +18,25 @@ class EventRepository extends ServiceEntityRepository
         parent::__construct($registry, Event::class);
     }
 
-    //    /**
-    //     * @return Event[] Returns an array of Event objects
-    //     */
-    //    public function findByExampleField($value): array
-    //    {
-    //        return $this->createQueryBuilder('e')
-    //            ->andWhere('e.exampleField = :val')
-    //            ->setParameter('val', $value)
-    //            ->orderBy('e.id', 'ASC')
-    //            ->setMaxResults(10)
-    //            ->getQuery()
-    //            ->getResult()
-    //        ;
-    //    }
+    /**
+     * @return array<Event>
+     */
+    public function findAllByDates(?DateTimeImmutable $startDate = null, ?DateTimeImmutable $endDate = null): array
+    {
+        $qb = $this->createQueryBuilder('e');
+        if( !($startDate || $endDate ) ) {
+            throw new InvalidArgumentException('At least one date must be provided.');
+        }
 
-    //    public function findOneBySomeField($value): ?Event
-    //    {
-    //        return $this->createQueryBuilder('e')
-    //            ->andWhere('e.exampleField = :val')
-    //            ->setParameter('val', $value)
-    //            ->getQuery()
-    //            ->getOneOrNullResult()
-    //        ;
-    //    }
+        if( $startDate ) {
+            $qb->andWhere('e.startAt >= :startDate')
+                ->setParameter('startDate', $startDate);
+        }
+        if( $endDate ) {
+            $qb->andWhere('e.endAt <= :endDate')
+                ->setParameter('endDate', $endDate);
+        }
+        return $qb->getQuery()
+                  ->getResult();
+    }
 }
