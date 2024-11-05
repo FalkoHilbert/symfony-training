@@ -22,6 +22,10 @@ class Volunteer
     #[ORM\ManyToOne(inversedBy: 'volunteers')]
     private ?Event $event = null;
 
+    #[ORM\ManyToOne(inversedBy: 'volunteers')]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?Project $project = null;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -59,6 +63,18 @@ class Volunteer
     public function setEvent(?Event $event): static
     {
         $this->event = $event;
+
+        return $this;
+    }
+
+    public function getProject(): ?Project
+    {
+        return $this->project;
+    }
+
+    public function setProject(?Project $project): static
+    {
+        $this->project = $project;
 
         return $this;
     }
