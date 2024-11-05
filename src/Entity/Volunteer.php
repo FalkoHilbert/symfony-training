@@ -20,10 +20,11 @@ class Volunteer
     private ?\DateTimeImmutable $entAt = null;
 
     #[ORM\ManyToOne(inversedBy: 'volunteers')]
+    #[ORM\JoinColumn(nullable: true, onDelete: 'SET NULL')]
     private ?Event $event = null;
 
     #[ORM\ManyToOne(inversedBy: 'volunteers')]
-    #[ORM\JoinColumn(nullable: false)]
+    #[ORM\JoinColumn(nullable: true, onDelete: 'SET NULL')]
     private ?Project $project = null;
 
     public function getId(): ?int

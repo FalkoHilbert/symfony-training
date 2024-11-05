@@ -47,7 +47,7 @@ class Event
     private Collection $organizations;
 
     #[ORM\ManyToOne(inversedBy: 'events')]
-    #[ORM\JoinColumn(nullable: false)]
+    #[ORM\JoinColumn(nullable: true, onDelete: 'SET NULL')]
     private ?Project $project = null;
 
     public function __construct()
