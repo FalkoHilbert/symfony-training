@@ -12,6 +12,11 @@
         {% endblock %}
     </head>
     <body>
-        {% block body %}{% endblock %}
+        <header>
+            {{ include('includes/nav_bar.html.twig') }}
+        </header>
+        <main class="container my-5">
+            {% block body %}{% endblock %}
+        </main>
     </body>
 </html>
