@@ -8,6 +8,6 @@ import './bootstrap_stimulus.js';
 import './styles/app.css';
 import 'bootstrap';
 import 'bootstrap/dist/css/bootstrap.min.css';
-import './js/theme-toggle.js';
+// import './js/theme-toggle.js';
 
 console.log('This log comes from assets/app.js - welcome to AssetMapper! 🎉');

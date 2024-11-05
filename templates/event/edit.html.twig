@@ -1,0 +1,14 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Edit Event: {{ event.name }}{% endblock %}
+
+{% block body %}
+    <section class="container row row-cols-1">
+        <div class="col-md-8 mx-auto">
+            <h1>Edit Event: {{ event.name }}</h1>
+        </div>
+
+        {{ include('includes/_form.html.twig', {button_label: 'Save'}) }}
+    </section>
+{% endblock %}
+

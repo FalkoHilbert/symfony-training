@@ -11,7 +11,7 @@
             {% block importmap %}{{ importmap('app') }}{% endblock %}
         {% endblock %}
     </head>
-    <body>
+    <body {{ stimulus_controller('theme_toogle') }}>
         {% include('includes/symbols.html.twig') %}
         <header>
             {{ include('includes/nav_bar.html.twig') }}

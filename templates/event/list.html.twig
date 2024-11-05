@@ -17,12 +17,12 @@
                                     <div class="form-group">
                                         <label for="filter-start">Start at</label>
                                         <input type="date" class="form-control" id="filter-start" name="start"
-                                               value="{{ startAt|default('') }}" />
+                                               value="{{ app.request.get('start')|default('') }}" />
                                     </div>
                                     <div class="form-group">
                                         <label for="filter-end">End at</label>
                                         <input type="date" class="form-control" id="filter-end" name="end"
-                                               value="{{ endAt|default('') }}" />
+                                               value="{{ app.request.get('end')|default('') }}" />
                                     </div>
                                 </div>
                             </div>
@@ -36,7 +36,7 @@
                 </div>
 
                 <div class="row row-cols-1 row-cols-md-2 g-4 mb-5">
-                    {% for event in events %}
+                    {% for event in events|sort((a,b) => a.startAt <=> b.startAt) %}
                         <div class="col">
                             <div class="card h-100 event-card">
                                 <div class="card-body">

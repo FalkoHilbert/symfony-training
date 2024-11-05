@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Entity\Event;
+use App\Form\EventType;
 use App\Repository\EventRepository;
 use DateTimeImmutable;
 use Doctrine\ORM\EntityManagerInterface;
@@ -20,7 +21,7 @@ class EventController extends AbstractController
     /**
      * @throws \DateMalformedStringException
      */
-    #[Route('/new/{name}/{start}/{end}', name: 'new', requirements: [
+    #[Route('/new/{name}/{start}/{end}', name: 'new_by_path', requirements: [
         'start' => Requirement::DATE_YMD,
         'end' => Requirement::DATE_YMD
     ], methods: [Request::METHOD_GET])]
@@ -64,7 +65,7 @@ class EventController extends AbstractController
         );
     }
 
-    #[Route('/{id}', name: 'show', methods: [Request::METHOD_GET])]
+    #[Route('/show/{id}', name: 'show', methods: [Request::METHOD_GET])]
     public function showEvent(
         Event $event,
     ): Response{
@@ -74,4 +75,37 @@ class EventController extends AbstractController
         );
     }
 
+    #[Route('/new', name: 'new', methods: [Request::METHOD_GET, Request::METHOD_POST])]
+    public function newEventForm(Request $request, EntityManagerInterface $entityManager): Response
+    {
+        $event = new Event();
+        $form = $this->createForm(EventType::class, $event);
+        $form->handleRequest($request);
+        if($form->isSubmitted() && $form->isValid( ))
+        {
+            $entityManager->persist($event);
+            $entityManager->flush();
+            return $this->redirectToRoute('app_event_show', [
+                'id' => $event->getId()
+            ]);
+        }
+        return $this->render('event/new.html.twig',[
+            'form' => $form->createView()
+        ]);
+    }
+
+    #[Route('/edit/{id}', name: 'edit', methods: [Request::METHOD_GET, Request::METHOD_POST])]
+    public function editEventForm(Event $event, Request $request): Response
+    {
+        $form = $this->createForm(EventType::class, $event);
+        $form->handleRequest($request);
+        if($form->isSubmitted() && $form->isValid( )) {
+            return $this->redirectToRoute('app_event_show', [
+                'id' => $event->getId()
+            ]);
+        }
+        return $this->render('event/edit.html.twig', [
+            'form' => $form->createView()
+        ]);
+    }
 }

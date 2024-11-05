@@ -90,7 +90,7 @@ class Event implements \JsonSerializable
         return $this->isAccessible;
     }
 
-    public function setAccessible(bool $isAccessible): static
+    public function setIsAccessible(bool $isAccessible): static
     {
         $this->isAccessible = $isAccessible;
 
@@ -179,6 +179,16 @@ class Event implements \JsonSerializable
         }
 
         return $this;
+    }
+
+    public function setOrganizations(ArrayCollection $organizations): static
+    {
+        $this->organizations = $organizations;
+        foreach ($this->organizations as $organization) {
+            $organization->addEvent($this);
+        }
+        return $this;
+
     }
 
     public function removeOrganization(Organization $organization): static

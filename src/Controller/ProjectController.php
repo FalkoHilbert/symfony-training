@@ -3,7 +3,9 @@
 namespace App\Controller;
 
 use App\Entity\Project;
+use App\Form\ProjectType;
 use App\Repository\ProjectRepository;
+use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -20,11 +22,44 @@ class ProjectController extends AbstractController
         ]);
     }
 
-    #[Route('/{id}', name: 'show', methods: [Request::METHOD_GET])]
+    #[Route('/show/{id}', name: 'show', methods: [Request::METHOD_GET])]
     public function show(Project $project): Response
     {
         return $this->render('project/show.html.twig', [
             'project' => $project,
+        ]);
+    }
+
+    #[Route('/new', name: 'new', methods: [Request::METHOD_GET])]
+    public function new(Request $request, EntityManagerInterface $entityManager): Response
+    {
+        $project = new Project();
+        $form = $this->createForm(ProjectType::class, $project);
+        $form->handleRequest($request);
+        if ($form->isSubmitted() && $form->isValid()) {
+            $entityManager->persist($project);
+            $entityManager->flush();
+            return $this->redirectToRoute('app_project_show', [
+                'id' => $project->getId(),
+            ]);
+        }
+        return $this->render('project/new.html.twig', [
+            'form' => $form->createView()
+        ]);
+    }
+
+    #[Route('/{id}/edit', name: 'edit', methods: [Request::METHOD_GET])]
+    public function edit(Project $project, Request $request): Response
+    {
+        $form = $this->createForm(ProjectType::class, $project);
+        $form->handleRequest($request);
+        if ($form->isSubmitted() && $form->isValid()) {
+            return $this->redirectToRoute('app_project_show', [
+                'id' => $project->getId(),
+            ]);
+        }
+        return $this->render('project/edit.html.twig', [
+            'form' => $form->createView()
         ]);
     }
 }
