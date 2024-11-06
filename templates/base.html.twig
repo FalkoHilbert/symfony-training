@@ -17,6 +17,14 @@
             {{ include('includes/nav_bar.html.twig') }}
         </header>
         <main class="container my-5">
+            {% block flash_messages %}
+                {% for message in app.session.flashBag %}
+                    <div class="alert alert-{{ message.type }}">
+                        {{ message.message }}
+                    </div>
+                {% endfor %}
+            {% endblock %}
+
             {% block body %}{% endblock %}
         </main>
     </body>

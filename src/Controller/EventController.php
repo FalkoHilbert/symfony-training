@@ -5,10 +5,13 @@ namespace App\Controller;
 use App\Entity\Event;
 use App\Form\EventType;
 use App\Repository\EventRepository;
+use App\Search\DatabaseEventSearch;
+use App\Search\EventSearchInterface;
 use DateTimeImmutable;
 use Doctrine\ORM\EntityManagerInterface;
 use Faker\Factory;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Attribute\MapQueryParameter;
@@ -50,15 +53,19 @@ class EventController extends AbstractController
     public function listEvents(
         #[MapQueryParameter] ?string $start,
         #[MapQueryParameter] ?string $end,
-        EventRepository $eventRepository
+        #[MapQueryParameter] ?string $name,
+        #[Autowire(service: DatabaseEventSearch::class)]
+        EventSearchInterface $search
     ): Response{
         $startDate = !empty($start) ? new DateTimeImmutable($start) : null;
         $endDate = !empty($end) ? new DateTimeImmutable($end) : null;
-
-        $events = (!empty($startDate) || !empty($endDate ) ) ?
-            $eventRepository->findAllByDates($startDate, $endDate) :
-            $eventRepository->findAll();
-
+        $events = $search->searchByFilter(
+            [
+                'startDate' => $startDate,
+                'endDate' => $endDate,
+                'name' => $name,
+            ]
+        );
         return $this->render('event/list.html.twig',[
                 'events' => $events
             ]

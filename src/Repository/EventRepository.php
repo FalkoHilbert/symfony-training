@@ -5,6 +5,7 @@ namespace App\Repository;
 use App\Entity\Event;
 use DateTimeImmutable;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\ORM\QueryBuilder;
 use Doctrine\Persistence\ManagerRegistry;
 use InvalidArgumentException;
 
@@ -23,19 +24,53 @@ class EventRepository extends ServiceEntityRepository
      */
     public function findAllByDates(?DateTimeImmutable $startDate = null, ?DateTimeImmutable $endDate = null): array
     {
-        $qb = $this->createQueryBuilder('e');
-        if( !($startDate || $endDate ) ) {
+        if (!($startDate || $endDate)) {
             throw new InvalidArgumentException('At least one date must be provided.');
         }
+        $qb = $this->createQueryBuilder('e');
+        $this->addDateFilters($startDate, $endDate, $qb);
+        return $qb->getQuery()
+                  ->getResult();
+    }
 
-        if( $startDate ) {
+    public function findLikeName(?string $name)
+    {
+        if (empty($name)) {
+            throw new InvalidArgumentException('At least one character must be provided.');
+        }
+        $qb = $this->createQueryBuilder('e');
+        $this->addNameFilter($name, $qb);
+        return $qb->getQuery()
+                  ->getResult();
+    }
+
+    public function addDateFilters(?DateTimeImmutable $startDate, ?DateTimeImmutable $endDate, QueryBuilder $qb): static
+    {
+        if ($startDate) {
             $qb->andWhere('e.startAt >= :startDate')
                 ->setParameter('startDate', $startDate);
         }
-        if( $endDate ) {
+        if ($endDate) {
             $qb->andWhere('e.endAt <= :endDate')
                 ->setParameter('endDate', $endDate);
         }
+        return $this;
+    }
+
+    public function addNameFilter(?string $name, QueryBuilder $qb): static
+    {
+        if (!empty($name)) {
+            $qb->andWhere('e.name LIKE :name')
+                ->setParameter('name', '%' . $name . '%');
+        }
+        return $this;
+    }
+
+    public function findByFilter(array $filters): array
+    {
+        $qb = $this->createQueryBuilder('e');
+        $this->addDateFilters($filters['startDate'] ?? null, $filters['endDate'] ?? null, $qb)
+             ->addNameFilter($filters['name'] ?? null, $qb);
         return $qb->getQuery()
                   ->getResult();
     }

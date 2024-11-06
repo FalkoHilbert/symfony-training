@@ -31,6 +31,12 @@
                                         <input type="date" class="form-control" id="filter-end" name="end"
                                                value="{{ app.request.get('end')|default('') }}" />
                                     </div>
+                                    <div class="form-group">
+                                        {# add name filter #}
+                                        <label for="filter-name">Name</label>
+                                        <input type="text" class="form-control" id="filter-name" name="name"
+                                               value="{{ app.request.get('name')|default('') }}" />
+                                    </div>
                                 </div>
                             </div>
                             <div class="row mt-3 flex-column align-items-end">
