@@ -31,7 +31,7 @@ class ProjectController extends AbstractController
         ]);
     }
 
-    #[Route('/new', name: 'new', methods: [Request::METHOD_GET])]
+    #[Route('/new', name: 'new', methods: [Request::METHOD_GET, Request::METHOD_POST])]
     public function new(Request $request, EntityManagerInterface $entityManager): Response
     {
         $project = new Project();
@@ -50,7 +50,7 @@ class ProjectController extends AbstractController
         ]);
     }
 
-    #[Route('/{id}/edit', name: 'edit', methods: [Request::METHOD_GET])]
+    #[Route('/{id}/edit', name: 'edit', methods: [Request::METHOD_GET, Request::METHOD_POST])]
     public function edit(Project $project, Request $request, EntityManagerInterface $entityManager): Response
     {
         $form = $this->createForm(ProjectType::class, $project);

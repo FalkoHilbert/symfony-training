@@ -17,7 +17,7 @@ class IndexController extends AbstractController
     public function index(): void
     { }
 
-    #[Route('/contact', name: 'app_contact', methods: ['GET'])]
+    #[Route('/contact', name: 'app_contact', methods: [Request::METHOD_GET, Request::METHOD_POST])]
     #[Template('main/contact.html.twig')]
     public function contact(Request $request): Response
     {
