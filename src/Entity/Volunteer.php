@@ -3,7 +3,11 @@
 namespace App\Entity;
 
 use App\Repository\VolunteerRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
+use Symfony\Component\Validator\Context\ExecutionContextInterface;
 
 #[ORM\Entity(repositoryClass: VolunteerRepository::class)]
 class Volunteer
@@ -17,6 +21,7 @@ class Volunteer
     private ?\DateTimeImmutable $startAt = null;
 
     #[ORM\Column]
+    #[Assert\GreaterThanOrEqual(propertyPath: 'startAt')]
     private ?\DateTimeImmutable $entAt = null;
 
     #[ORM\ManyToOne(inversedBy: 'volunteers')]
@@ -26,6 +31,20 @@ class Volunteer
     #[ORM\ManyToOne(inversedBy: 'volunteers')]
     #[ORM\JoinColumn(nullable: true, onDelete: 'SET NULL')]
     private ?Project $project = null;
+
+    #[ORM\ManyToOne(inversedBy: 'volunteers')]
+    private ?User $forUser = null;
+
+    /**
+     * @var Collection<int, Organization>
+     */
+    #[ORM\ManyToMany(targetEntity: Organization::class, mappedBy: 'volunteers')]
+    private Collection $organizations;
+
+    public function __construct()
+    {
+        $this->organizations = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
@@ -78,5 +97,85 @@ class Volunteer
         $this->project = $project;
 
         return $this;
+    }
+
+    public function getForUser(): ?User
+    {
+        return $this->forUser;
+    }
+
+    public function setForUser(?User $forUser): static
+    {
+        $this->forUser = $forUser;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Organization>
+     */
+    public function getOrganizations(): Collection
+    {
+        return $this->organizations;
+    }
+
+    public function addOrganization(Organization $organization): static
+    {
+        if (!$this->organizations->contains($organization)) {
+            $this->organizations->add($organization);
+            $organization->addVolunteer($this);
+        }
+
+        return $this;
+    }
+
+    public function removeOrganization(Organization $organization): static
+    {
+        if ($this->organizations->removeElement($organization)) {
+            $organization->removeVolunteer($this);
+        }
+
+        return $this;
+    }
+
+    #[Assert\Callback()]
+    public function validate(ExecutionContextInterface $context, mixed $payload): void
+    {
+        if ($this->getEvent() instanceof Event) {
+            if ($this->getStartAt()?->getTimestamp() < $this->getEvent()->getStartAt()?->getTimestamp()
+                || $this->getStartAt()?->getTimestamp()> $this->getEvent()->getEndAt()?->getTimestamp()
+            ) {
+                $context->buildViolation("The volunteering start date should be comprised in the event's dates")
+                    ->atPath('startAt')
+                    ->addViolation();
+            }
+            if (
+                $this->getEntAt()?->getTimestamp() < $this->getEvent()->getStartAt()?->getTimestamp()
+                || $this->getEntAt()?->getTimestamp() > $this->getEvent()->getEndAt()?->getTimestamp()
+            ) {
+                $context->buildViolation("The volunteering start date should be comprised in the event's dates")
+                    ->atPath('endAt')
+                    ->addViolation();
+            }
+        }
+
+        if (null === $this->getEvent() && null === $this->getProject()) {
+            $context->buildViolation("You have to select and event or a project, or both")
+                ->atPath('event')
+                ->addViolation();
+            $context->buildViolation("You have to select and event or a project, or both")
+                ->atPath('project')
+                ->addViolation();
+        }
+
+        if ($this->getEvent() instanceof Event
+            && $this->getProject() instanceof Project
+            && !$this->getProject()->getEvents()->contains($this->getEvent())
+        ) {
+
+            $context->buildViolation("You have to select an event from the chosen project")
+                ->atPath('event')
+                ->addViolation();
+        }
     }
 }

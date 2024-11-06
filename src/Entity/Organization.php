@@ -37,10 +37,17 @@ class Organization
     #[ORM\ManyToMany(targetEntity: Project::class, mappedBy: 'organizations')]
     private Collection $projects;
 
+    /**
+     * @var Collection<int, Volunteer>
+     */
+    #[ORM\ManyToMany(targetEntity: Volunteer::class, inversedBy: 'organizations')]
+    private Collection $volunteers;
+
     public function __construct()
     {
         $this->events = new ArrayCollection();
         $this->projects = new ArrayCollection();
+        $this->volunteers = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -131,6 +138,30 @@ class Organization
         if ($this->projects->removeElement($project)) {
             $project->removeOrganization($this);
         }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Volunteer>
+     */
+    public function getVolunteers(): Collection
+    {
+        return $this->volunteers;
+    }
+
+    public function addVolunteer(Volunteer $volunteer): static
+    {
+        if (!$this->volunteers->contains($volunteer)) {
+            $this->volunteers->add($volunteer);
+        }
+
+        return $this;
+    }
+
+    public function removeVolunteer(Volunteer $volunteer): static
+    {
+        $this->volunteers->removeElement($volunteer);
 
         return $this;
     }

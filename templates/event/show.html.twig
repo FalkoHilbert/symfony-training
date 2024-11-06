@@ -32,9 +32,36 @@
                             <p class="">{{ event.description }}</p>
                         </li>
                     </ul>
+
+                    <div class="row">
+                        <div class="col-auto m-3">
+                            <a href="{{ path('app_volunteer_to_event', { id: event.id}) }}">
+                                <button class="btn text-white" style="background-color: limegreen;">Apply as Volunteer</button>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                {# dispay all volunteers #}
+                <div class="card mb-4">
+                    <div class="card-body">
+                        <div class="card-title">
+                            <h1 class="fw-bold" style="color: limegreen;">Volunteers</h1>
+                        </div>
+                        <div class="list-group">
+                            {% for volunteer in event.volunteers %}
+                                <a href="{{ path('app_volunteer_show', { id: volunteer.id }) }}"
+                                   class="list-group-item list-group-item-action">
+                                    {{ volunteer.forUser ? volunteer.forUser.email : volunteer.id }}
+                                </a>
+                            {% else %}
+                                <p class="text-muted">No volunteers yet.</p>
+                            {% endfor %}
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
+
         <div class="row">
             <div class="col-md-8 m-auto justify-content-start">
                 <a href="{{ path('app_event_list') }}">
