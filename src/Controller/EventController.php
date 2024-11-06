@@ -4,14 +4,12 @@ namespace App\Controller;
 
 use App\Entity\Event;
 use App\Form\EventType;
-use App\Repository\EventRepository;
 use App\Search\DatabaseEventSearch;
 use App\Search\EventSearchInterface;
 use DateTimeImmutable;
 use Doctrine\ORM\EntityManagerInterface;
 use Faker\Factory;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Attribute\MapQueryParameter;
@@ -40,8 +38,8 @@ class EventController extends AbstractController
             ->setName($name)
             ->setDescription($faker->realText(100))
             ->setIsAccessible(true)
-            ->setStartAt(new DateTimeImmutable($start))
-            ->setEndAt(new DateTimeImmutable($end));
+            ->setStartDate(new DateTimeImmutable($start))
+            ->setEndDate(new DateTimeImmutable($end));
 
         $entityManager->persist($event);
         $entityManager->flush();
@@ -54,8 +52,7 @@ class EventController extends AbstractController
         #[MapQueryParameter] ?string $start,
         #[MapQueryParameter] ?string $end,
         #[MapQueryParameter] ?string $name,
-        #[Autowire(service: DatabaseEventSearch::class)]
-        EventSearchInterface $search
+        DatabaseEventSearch $search
     ): Response{
         $startDate = !empty($start) ? new DateTimeImmutable($start) : null;
         $endDate = !empty($end) ? new DateTimeImmutable($end) : null;
@@ -67,6 +64,18 @@ class EventController extends AbstractController
             ]
         );
         return $this->render('event/list.html.twig',[
+                'events' => $events
+            ]
+        );
+    }
+
+    #[Route('/remote', name: 'remote', methods: [Request::METHOD_GET])]
+    public function remoteEvents(
+        #[MapQueryParameter] ?string $name,
+        EventSearchInterface $search
+    ): Response{
+        $events = $search->searchByName($name);
+        return $this->render('event/remote.html.twig',[
                 'events' => $events
             ]
         );

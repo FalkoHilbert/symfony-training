@@ -35,16 +35,16 @@ class Event implements \JsonSerializable
     #[Assert\Length(min: 20)]
     private ?string $prerequisites = null;
 
-    #[ORM\Column]
+    #[ORM\Column(name: 'start_at')]
     #[Assert\NotBlank]
     #[Assert\GreaterThanOrEqual('today')]
-    private ?\DateTimeImmutable $startAt = null;
+    private ?\DateTimeImmutable $startDate = null;
 
-    #[ORM\Column]
+    #[ORM\Column(name: 'end_at')]
     #[Assert\NotBlank]
     #[Assert\GreaterThanOrEqual('today')]
     #[Assert\GreaterThan(propertyPath: 'startAt')]
-    private ?\DateTimeImmutable $endAt = null;
+    private ?\DateTimeImmutable $endDate = null;
 
     /**
      * @var Collection<int, Volunteer>
@@ -124,26 +124,26 @@ class Event implements \JsonSerializable
         return $this;
     }
 
-    public function getStartAt(): ?\DateTimeImmutable
+    public function getStartDate(): ?\DateTimeImmutable
     {
-        return $this->startAt;
+        return $this->startDate;
     }
 
-    public function setStartAt(\DateTimeImmutable $startAt): static
+    public function setStartDate(\DateTimeImmutable $startDate): static
     {
-        $this->startAt = $startAt;
+        $this->startDate = $startDate;
 
         return $this;
     }
 
-    public function getEndAt(): ?\DateTimeImmutable
+    public function getEndDate(): ?\DateTimeImmutable
     {
-        return $this->endAt;
+        return $this->endDate;
     }
 
-    public function setEndAt(\DateTimeImmutable $endAt): static
+    public function setEndDate(\DateTimeImmutable $endDate): static
     {
-        $this->endAt = $endAt;
+        $this->endDate = $endDate;
 
         return $this;
     }
@@ -225,8 +225,8 @@ class Event implements \JsonSerializable
             'description' => $this->description,
             'isAccessible' => $this->isAccessible,
             'prerequisites' => $this->prerequisites,
-            'startAt' => $this->startAt,
-            'endAt' => $this->endAt
+            'startAt' => $this->startDate,
+            'endAt' => $this->endDate
         ];
     }
 }

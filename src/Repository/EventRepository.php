@@ -47,11 +47,11 @@ class EventRepository extends ServiceEntityRepository
     public function addDateFilters(?DateTimeImmutable $startDate, ?DateTimeImmutable $endDate, QueryBuilder $qb): static
     {
         if ($startDate) {
-            $qb->andWhere('e.startAt >= :startDate')
+            $qb->andWhere('e.startDate >= :startDate')
                 ->setParameter('startDate', $startDate);
         }
         if ($endDate) {
-            $qb->andWhere('e.endAt <= :endDate')
+            $qb->andWhere('e.endDate <= :endDate')
                 ->setParameter('endDate', $endDate);
         }
         return $this;

@@ -1,0 +1,18 @@
+{% extends 'event/list.html.twig' %}
+
+{% block event_filter_new_button %}{% endblock %}
+{% block event_filter_start_date %}{% endblock %}
+{% block event_filter_end_date %}{% endblock %}
+
+{% block event_name %}
+    <span
+        class="stretched-link text-decoration-none"
+        style="color: limegreen;">{{ event.name }}</span>
+{% endblock %}
+{% block event_project %}{% endblock %}
+{% block event_organization %}{% endblock %}
+{% block event_volunteers %}{% endblock %}
+
+{% block event_filter_form_start %}
+    <form action="{{ path('app_event_remote') }}" method="get">
+{% endblock %}

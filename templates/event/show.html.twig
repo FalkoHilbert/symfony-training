@@ -17,8 +17,8 @@
                             <div class="d-flex justify-content-between mt-4">
                                 <div>
                                     <p>From <span
-                                                class="fw-semibold">{{ event.startAt|date('d/m/y') }}</span> to
-                                        <span class="fw-semibold">{{ event.endAt|date('d/m/y') }}</span></p>
+                                                class="fw-semibold">{{ event.startDate|date('d/m/y') }}</span> to
+                                        <span class="fw-semibold">{{ event.endDate|date('d/m/y') }}</span></p>
                                     <p class="my-0">Project: {{ event.project.name }}</p>
                                     <p class="my-0">Organizations: {{ event.organizations|map(o => o.name)|join(', ') }}</p>
                                     <p>Accessible

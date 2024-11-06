@@ -12,72 +12,104 @@
                         <h1 class="fw-bolder" style="color: limegreen;">List all events</h1>
                     </div>
                     <div class="col-auto">
-                        <a href="{{ path('app_event_new') }}" class="btn btn-primary">Create new event</a>
+                        {% block event_filter_new_button %}
+                            <a href="{{ path('app_event_new') }}" class="btn btn-primary">Create new event</a>
+                        {% endblock %}
                     </div>
                 </div>
                 {# add filter form #}
+                {% block event_filter %}
                 <div class="row mb-5">
                     <div class="col-md-12">
-                        <form action="{{ path('app_event_list') }}" method="get">
-                            <div class="row">
-                                <div class="col-md-12">
-                                    <div class="form-group">
-                                        <label for="filter-start">Start at</label>
-                                        <input type="date" class="form-control" id="filter-start" name="start"
-                                               value="{{ app.request.get('start')|default('') }}" />
-                                    </div>
-                                    <div class="form-group">
-                                        <label for="filter-end">End at</label>
-                                        <input type="date" class="form-control" id="filter-end" name="end"
-                                               value="{{ app.request.get('end')|default('') }}" />
-                                    </div>
-                                    <div class="form-group">
-                                        {# add name filter #}
-                                        <label for="filter-name">Name</label>
-                                        <input type="text" class="form-control" id="filter-name" name="name"
-                                               value="{{ app.request.get('name')|default('') }}" />
+                        {% block event_filter_form_start %}
+                            <form action="{{ path('app_event_list') }}" method="get">
+                        {% endblock %}
+                        {% block event_filter_filter %}
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        {% block event_filter_start_date %}
+                                            <div class="form-group">
+                                                <label for="filter-start">Start at</label>
+                                                <input type="date" class="form-control" id="filter-start" name="start"
+                                                       value="{{ app.request.get('start')|default('') }}" />
+                                            </div>
+                                        {% endblock %}
+                                        {% block event_filter_end_date %}
+                                            <div class="form-group">
+                                                <label for="filter-end">End at</label>
+                                                <input type="date" class="form-control" id="filter-end" name="end"
+                                                       value="{{ app.request.get('end')|default('') }}" />
+                                            </div>
+                                        {% endblock %}
+                                        {% block event_filter_name %}
+                                            <div class="form-group">
+                                                {# add name filter #}
+                                                <label for="filter-name">Name</label>
+                                                <input type="text" class="form-control" id="filter-name" name="name"
+                                                       value="{{ app.request.get('name')|default('') }}" />
+                                            </div>
+                                        {% endblock %}
                                     </div>
                                 </div>
-                            </div>
-                            <div class="row mt-3 flex-column align-items-end">
-                                <div class="col-auto">
-                                    <button type="submit" class="btn btn-secondary">Filter</button>
+                                <div class="row mt-3 flex-column align-items-end">
+                                    <div class="col-auto">
+                                        {% block event_filter_submit %}
+                                        <button type="submit" class="btn btn-secondary">Filter</button>
+                                        {% endblock %}
+                                    </div>
                                 </div>
-                            </div>
-                        </form>
+                        {% endblock %}
+                        {% block event_filter_form_end %}
+                            </form>
+                        {% endblock %}
                     </div>
                 </div>
-
+                {% endblock %}
                 <div class="row row-cols-1 row-cols-md-2 g-4 mb-5">
-                    {% for event in events|sort((a,b) => a.startAt <=> b.startAt) %}
+                    {% for event in events|sort((a,b) => a.startDate <=> b.startDate) %}
                         <div class="col">
                             <div class="card h-100 event-card">
                                 <div class="card-body">
                                     <div class="card-title">
                                         <h5 class="fw-bolder mb-0">
+                                            {% block event_name %}
                                             <a href="{{ path('app_event_show', {id: event.id}) }}"
                                                class="stretched-link text-decoration-none"
                                                style="color: limegreen;">{{ event.name }}</a>
+                                            {% endblock %}
                                         </h5>
                                     </div>
                                     <div class="card-text d-flex justify-content-between">
                                         <div>
-                                            {% if event.project is not null %}
-                                                <p class="my-0">{{ event.project.name }}</p>
-                                            {% endif %}
-                                            {% if event.organizations.count > 0 %}
-                                                <p class="my-0">{{ event.organizations|map(o => o.name)|join(', ') }}</p>
-                                            {% endif %}
+                                            {% block event_project %}
+                                                {% if event.project is defined and event.project is not null %}
+                                                    <p class="my-0">{{ event.project.name }}</p>
+                                                {% endif %}
+                                            {% endblock %}
+                                            {% block event_organization %}
+                                                {% if event.organizations is defined and  event.organizations.count is defined and event.organizations.count > 0 %}
+                                                    <p class="my-0">{{ event.organizations|map(o => o.name)|join(', ') }}</p>
+                                                {% endif %}
+                                            {% endblock %}
                                         </div>
                                         <div>
-                                            <p class="mb-0">From <span
-                                                        class="fw-semibold">{{ event.startAt|date('d/m/y') }}</span>
-                                                to
-                                                <span class="fw-semibold">{{ event.endAt|date('d/m/y') }}</span></p>
-                                            <p class="my-0 fst-italic">{{ event.volunteers.count }} volunteers
-                                                yet.</p>
-                                            <p class="mt-0">Accessible
-                                                : {{ event.accessible ? '<span style="color: limegreen;">Yes</span>' : '<span style="color: red;">No</span>' }}</p>
+                                            {% block event_informations %}
+                                                <p class="mb-0">From <span
+                                                            class="fw-semibold">{{ event.startDate|date('d/m/y') }}</span>
+                                                    to
+                                                    <span class="fw-semibold">{{ event.endDate|date('d/m/y') }}</span>
+                                                </p>
+                                            {% endblock %}
+                                            {% block event_volunteers %}
+                                                {% if event.volunteers is defined %}
+                                                <p class="my-0 fst-italic">{{ event.volunteers.count }} volunteers
+                                                    yet.</p>
+                                                {% endif %}
+                                            {% endblock %}
+                                            {% block event_accessible %}
+                                                <p class="mt-0">Accessible
+                                                    : {{ event.accessible ? '<span style="color: limegreen;">Yes</span>' : '<span style="color: red;">No</span>' }}</p>
+                                            {% endblock %}
                                         </div>
                                     </div>
                                 </div>

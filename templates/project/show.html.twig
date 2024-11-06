@@ -43,7 +43,7 @@
                                 {% for event in project.events %}
                                     <li class="list-group-item d-flex justify-content-between">
                                         <a href="{{ path('app_event_show', {id: event.id}) }}">{{ event.name }}</a>
-                                        <span>From {{ event.startAt|date('d/m/y') }} to {{ event.endAt|date('d/m/y') }}</span>
+                                        <span>From {{ event.startDate|date('d/m/y') }} to {{ event.endDate|date('d/m/y') }}</span>
                                     </li>
                                 {% else %}
                                     <li class="list-group-item">No events yet.</li>

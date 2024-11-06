@@ -3,40 +3,41 @@
 namespace App\Consume;
 
 use App\Search\EventSearchInterface;
-use SensitiveParameter;
-use Symfony\Component\DependencyInjection\Attribute\Autowire;
+use Symfony\Contracts\HttpClient\HttpClientInterface;
 
-class EventsApiConsumer implements EventSearchInterface
+readonly final class EventsApiConsumer implements EventSearchInterface
 {
     public function __construct(
-        #[SensitiveParameter]
-        #[Autowire(env: 'EVENTS_API_URL')]
-        private string $apiKey,
+        private HttpClientInterface $eventsClient
     )
     {
     }
 
-    /**
-     * @inheritDoc
-     */
+    /** @inheritDoc */
     public function searchByName(?string $name = null): array
     {
-        // TODO: Implement searchByName() method.
+        return $this->eventsClient->request('GET', '/events', [
+            'query' => [
+                'name' => $name,
+            ]
+        ])->toArray()['hydra:member'];
+
     }
 
-    /**
-     * @inheritDoc
-     */
+    /** @inheritDoc */
     public function searchByDate(?\DateTimeImmutable $start = null, ?\DateTimeImmutable $end = null): array
     {
         // TODO: Implement searchByDate() method.
+        return [];
     }
 
-    /**
-     * @inheritDoc
-     */
+    /** @inheritDoc */
     public function searchByFilter(array $filters): array
     {
-        // TODO: Implement searchByFilter() method.
+        return $this->eventsClient->request('GET', '/events', [
+            'query' => [
+                'name' => $filters['name'] ?? null,
+            ]
+        ])->toArray()['hydra:member'];
     }
 }

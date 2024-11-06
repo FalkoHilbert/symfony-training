@@ -142,16 +142,16 @@ class Volunteer
     public function validate(ExecutionContextInterface $context, mixed $payload): void
     {
         if ($this->getEvent() instanceof Event) {
-            if ($this->getStartAt()?->getTimestamp() < $this->getEvent()->getStartAt()?->getTimestamp()
-                || $this->getStartAt()?->getTimestamp()> $this->getEvent()->getEndAt()?->getTimestamp()
+            if ($this->getStartAt()?->getTimestamp() < $this->getEvent()->getStartDate()?->getTimestamp()
+                || $this->getStartAt()?->getTimestamp()> $this->getEvent()->getEndDate()?->getTimestamp()
             ) {
                 $context->buildViolation("The volunteering start date should be comprised in the event's dates")
                     ->atPath('startAt')
                     ->addViolation();
             }
             if (
-                $this->getEntAt()?->getTimestamp() < $this->getEvent()->getStartAt()?->getTimestamp()
-                || $this->getEntAt()?->getTimestamp() > $this->getEvent()->getEndAt()?->getTimestamp()
+                $this->getEntAt()?->getTimestamp() < $this->getEvent()->getStartDate()?->getTimestamp()
+                || $this->getEntAt()?->getTimestamp() > $this->getEvent()->getEndDate()?->getTimestamp()
             ) {
                 $context->buildViolation("The volunteering start date should be comprised in the event's dates")
                     ->atPath('endAt')

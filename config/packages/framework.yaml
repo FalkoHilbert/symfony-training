@@ -8,6 +8,13 @@ framework:
 
     #esi: true
     #fragments: true
+    http_client:
+        scoped_clients:
+            events.client:
+                base_uri: 'https://www.devevents-api.fr'
+                headers:
+                    Accept: 'application/json'
+                    apiKey: '%env(EVENTS_API_KEY)%'
 
 when@test:
     framework:

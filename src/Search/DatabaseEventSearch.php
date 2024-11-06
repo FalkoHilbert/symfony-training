@@ -12,20 +12,20 @@ readonly final class DatabaseEventSearch implements EventSearchInterface
     )
     { }
 
-    /** @return Event[] */
+    /** @inheritDoc */
     public function searchByName(?string $name = null): array
     {
         return $this->eventRepository->findLikeName($name);
 
     }
 
-    /** @return Event[] */
+    /** @inheritDoc */
     public function searchByDate(?\DateTimeImmutable $start = null, ?\DateTimeImmutable $end = null): array
     {
         return $this->eventRepository->findAllByDates($start, $end);
     }
 
-    /** @return Event[] */
+    /** @inheritDoc */
     public function searchByFilter(array $filters): array
     {
         return $this->eventRepository->findByFilter($filters);
