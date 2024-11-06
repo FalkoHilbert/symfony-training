@@ -7,6 +7,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: EventRepository::class)]
 class Event implements \JsonSerializable
@@ -17,21 +18,32 @@ class Event implements \JsonSerializable
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
+    #[Assert\NotBlank]
+    #[Assert\Length(min: 10)]
     private ?string $name = null;
 
     #[ORM\Column(type: Types::TEXT)]
+    #[Assert\NotBlank]
+    #[Assert\Length(min: 30)]
     private ?string $description = null;
 
     #[ORM\Column]
+    #[Assert\NotNull]
     private ?bool $isAccessible = null;
 
     #[ORM\Column(type: Types::TEXT, nullable: true)]
+    #[Assert\Length(min: 20)]
     private ?string $prerequisites = null;
 
     #[ORM\Column]
+    #[Assert\NotBlank]
+    #[Assert\GreaterThanOrEqual('today')]
     private ?\DateTimeImmutable $startAt = null;
 
     #[ORM\Column]
+    #[Assert\NotBlank]
+    #[Assert\GreaterThanOrEqual('today')]
+    #[Assert\GreaterThan(propertyPath: 'startAt')]
     private ?\DateTimeImmutable $endAt = null;
 
     /**
@@ -44,10 +56,13 @@ class Event implements \JsonSerializable
      * @var Collection<int, Organization>
      */
     #[ORM\ManyToMany(targetEntity: Organization::class, mappedBy: 'events')]
+    #[Assert\Count(min: 1)]
+    #[Assert\Valid]
     private Collection $organizations;
 
     #[ORM\ManyToOne(inversedBy: 'events')]
     #[ORM\JoinColumn(nullable: true, onDelete: 'SET NULL')]
+    #[Assert\Valid]
     private ?Project $project = null;
 
     public function __construct()

@@ -36,7 +36,7 @@ class EventController extends AbstractController
         $event = (new Event())
             ->setName($name)
             ->setDescription($faker->realText(100))
-            ->setAccessible(true)
+            ->setIsAccessible(true)
             ->setStartAt(new DateTimeImmutable($start))
             ->setEndAt(new DateTimeImmutable($end));
 
@@ -90,7 +90,7 @@ class EventController extends AbstractController
             ]);
         }
         return $this->render('event/new.html.twig',[
-            'form' => $form->createView()
+            'form' => $form
         ]);
     }
 
@@ -105,7 +105,7 @@ class EventController extends AbstractController
             ]);
         }
         return $this->render('event/edit.html.twig', [
-            'form' => $form->createView()
+            'form' => $form
         ]);
     }
 }

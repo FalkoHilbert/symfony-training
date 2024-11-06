@@ -5,6 +5,7 @@ namespace App\Controller;
 use App\Entity\Project;
 use App\Form\ProjectType;
 use App\Repository\ProjectRepository;
+use DateTimeImmutable;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -37,6 +38,7 @@ class ProjectController extends AbstractController
         $form = $this->createForm(ProjectType::class, $project);
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
+            $project->setCreatedAt(new DateTimeImmutable());
             $entityManager->persist($project);
             $entityManager->flush();
             return $this->redirectToRoute('app_project_show', [
@@ -44,22 +46,24 @@ class ProjectController extends AbstractController
             ]);
         }
         return $this->render('project/new.html.twig', [
-            'form' => $form->createView()
+            'form' => $form
         ]);
     }
 
     #[Route('/{id}/edit', name: 'edit', methods: [Request::METHOD_GET])]
-    public function edit(Project $project, Request $request): Response
+    public function edit(Project $project, Request $request, EntityManagerInterface $entityManager): Response
     {
         $form = $this->createForm(ProjectType::class, $project);
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
+            $project->setUpdatedAt(new DateTimeImmutable());
+            $entityManager->flush();
             return $this->redirectToRoute('app_project_show', [
                 'id' => $project->getId(),
             ]);
         }
         return $this->render('project/edit.html.twig', [
-            'form' => $form->createView()
+            'form' => $form
         ]);
     }
 }

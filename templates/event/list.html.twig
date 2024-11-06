@@ -7,7 +7,10 @@
     <div class="container">
         <div class="row">
             <div class="col-md-10 m-auto">
-                <h1 class="fw-bolder" style="color: limegreen;">List all events</h1>
+                <div class="row mb-5 justify-content-between">
+                    <h1 class="col-auto fw-bolder" style="color: limegreen;">List all events</h1>
+                    <a href="{{ path('app_event_new') }}" class="col-auto btn btn-primary">Create new event</a>
+                </div>
                 {# add filter form #}
                 <div class="row mb-5">
                     <div class="col-md-12">

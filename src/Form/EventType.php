@@ -11,6 +11,7 @@ use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\CollectionType;
 use Symfony\Component\Form\Extension\Core\Type\DateType;
+use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
@@ -21,9 +22,13 @@ class EventType extends AbstractType
     {
         $builder
             ->add('name', TextType::class )
-            ->add('description', TextType::class, )
+            ->add('description', TextareaType::class, [
+                'attr' => ['class' => 'tinymce']
+            ] )
             ->add('isAccessible', CheckboxType::class)
-            ->add('prerequisites', TextType::class)
+            ->add('prerequisites', TextareaType::class, [
+                'attr' => ['class' => 'tinymce']
+            ] )
             ->add('startAt', DateType::class, [
                 'widget' => 'single_text',
             ])
