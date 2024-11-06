@@ -1,17 +1,36 @@
-/*!
- * Color mode toggler for Bootstrap's docs (https://getbootstrap.com/)
- * Copyright 2011-2024 The Bootstrap Authors
- * Licensed under the Creative Commons Attribution 3.0 Unported License.
- */
+import { Controller } from '@hotwired/stimulus';
 
-(() => {
-    'use strict'
+export default class extends Controller {
+    connect() {
+        console.log('Theme toggle controller connected');
+        this.setTheme(this.getPreferredTheme());
+        window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => {
+            let storedTheme = this.getStoredTheme()
+            if (storedTheme !== 'light' && storedTheme !== 'dark') {
+                this.setTheme(this.getPreferredTheme())
+            }
+        });
+    }
 
-    const getStoredTheme = () => localStorage.getItem('theme')
-    const setStoredTheme = theme => localStorage.setItem('theme', theme)
+    initialize() {
+        this.showActiveTheme(this.getPreferredTheme())
 
-    const getPreferredTheme = () => {
-        const storedTheme = getStoredTheme()
+        document.querySelectorAll('[data-bs-theme-value]')
+            .forEach(toggle => {
+                toggle.addEventListener('click', () => {
+                    const theme = toggle.getAttribute('data-bs-theme-value')
+                    this.setStoredTheme(theme)
+                    this.setTheme(theme)
+                    this.showActiveTheme(theme, true)
+                })
+            })
+    }
+
+    getStoredTheme = () => localStorage.getItem('theme')
+    setStoredTheme = theme => localStorage.setItem('theme', theme)
+
+    getPreferredTheme = () => {
+        const storedTheme = this.getStoredTheme()
         if (storedTheme) {
             return storedTheme
         }
@@ -19,7 +38,7 @@
         return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'
     }
 
-    const setTheme = theme => {
+    setTheme = theme => {
         if (theme === 'auto') {
             document.documentElement.setAttribute('data-bs-theme', (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'))
         } else {
@@ -27,9 +46,9 @@
         }
     }
 
-    setTheme(getPreferredTheme())
 
-    const showActiveTheme = (theme, focus = false) => {
+
+    showActiveTheme = (theme, focus = false) => {
         const themeSwitcher = document.querySelector('#bd-theme')
 
         if (!themeSwitcher) {
@@ -56,25 +75,4 @@
             themeSwitcher.focus()
         }
     }
-
-    window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => {
-        const storedTheme = getStoredTheme()
-        if (storedTheme !== 'light' && storedTheme !== 'dark') {
-            setTheme(getPreferredTheme())
-        }
-    })
-
-    window.addEventListener('DOMContentLoaded', () => {
-        showActiveTheme(getPreferredTheme())
-
-        document.querySelectorAll('[data-bs-theme-value]')
-            .forEach(toggle => {
-                toggle.addEventListener('click', () => {
-                    const theme = toggle.getAttribute('data-bs-theme-value')
-                    setStoredTheme(theme)
-                    setTheme(theme)
-                    showActiveTheme(theme, true)
-                })
-            })
-    })
-})()
+}
