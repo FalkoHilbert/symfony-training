@@ -29,10 +29,10 @@ class EventType extends AbstractType
             ->add('prerequisites', TextareaType::class, [
                 'attr' => ['class' => 'tinymce']
             ] )
-            ->add('startAt', DateType::class, [
+            ->add('startDate', DateType::class, [
                 'widget' => 'single_text',
             ])
-            ->add('endAt', DateType::class, [
+            ->add('endDate', DateType::class, [
                 'widget' => 'single_text',
             ])
             ->add('organizations', EntityType::class, [

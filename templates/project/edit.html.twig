@@ -1,14 +1,13 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Edit Project: {{ project.name }}{% endblock %}
+{% block title %}Create Project{% endblock %}
 
 {% block body %}
     <section class="container row row-cols-1">
         <div class="col-md-8 mx-auto">
-            <h1>Edit Project: {{ project.name }}</h1>
+            <h1>New Project</h1>
         </div>
 
-        {{ include('includes/_form.html.twig', {button_label: 'Save'}) }}
+        {{ include('includes/_form.html.twig', {button_label: 'Save', back_link_route: 'app_event_show', id: (project ? project.id : null) }) }}
     </section>
 {% endblock %}
-

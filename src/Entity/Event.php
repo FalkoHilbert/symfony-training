@@ -10,7 +10,7 @@ use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: EventRepository::class)]
-class Event implements \JsonSerializable
+class Event implements \JsonSerializable, CreatedByInterface, HasOrganizationsInterface
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
@@ -43,7 +43,7 @@ class Event implements \JsonSerializable
     #[ORM\Column(name: 'end_at')]
     #[Assert\NotBlank]
     #[Assert\GreaterThanOrEqual('today')]
-    #[Assert\GreaterThan(propertyPath: 'startAt')]
+    #[Assert\GreaterThan(propertyPath: 'startDate')]
     private ?\DateTimeImmutable $endDate = null;
 
     /**
@@ -64,6 +64,10 @@ class Event implements \JsonSerializable
     #[ORM\JoinColumn(nullable: true, onDelete: 'SET NULL')]
     #[Assert\Valid]
     private ?Project $project = null;
+
+    #[ORM\ManyToOne(inversedBy: 'events')]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?User $createdBy = null;
 
     public function __construct()
     {
@@ -228,5 +232,17 @@ class Event implements \JsonSerializable
             'startAt' => $this->startDate,
             'endAt' => $this->endDate
         ];
+    }
+
+    public function getCreatedBy(): ?User
+    {
+        return $this->createdBy;
+    }
+
+    public function setCreatedBy(?User $createdBy): static
+    {
+        $this->createdBy = $createdBy;
+
+        return $this;
     }
 }

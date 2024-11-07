@@ -6,6 +6,8 @@ use App\Entity\Event;
 use App\Form\EventType;
 use App\Search\DatabaseEventSearch;
 use App\Search\EventSearchInterface;
+use App\Security\Voter\CreatedVoter;
+use App\Security\Voter\EditVoter;
 use DateTimeImmutable;
 use Doctrine\ORM\EntityManagerInterface;
 use Faker\Factory;
@@ -92,36 +94,32 @@ class EventController extends AbstractController
     }
 
     #[Route('/new', name: 'new', methods: [Request::METHOD_GET, Request::METHOD_POST])]
-    public function newEventForm(Request $request, EntityManagerInterface $entityManager): Response
+    #[Route('/edit/{id}', name: 'edit', methods: [Request::METHOD_GET, Request::METHOD_POST])]
+    public function newEventForm(
+        Request $request,
+        EntityManagerInterface $entityManager,
+        Event $event = null
+    ): Response
     {
-        $event = new Event();
+        if($event instanceof Event )
+        {
+            $this->denyAccessUnlessGranted(EditVoter::EDIT, $event);
+        }
+        $event = $event ?? new Event();
         $form = $this->createForm(EventType::class, $event);
         $form->handleRequest($request);
         if($form->isSubmitted() && $form->isValid( ))
         {
+            $event->setCreatedBy($this->getUser());
             $entityManager->persist($event);
             $entityManager->flush();
             return $this->redirectToRoute('app_event_show', [
                 'id' => $event->getId()
             ]);
         }
-        return $this->render('event/new.html.twig',[
-            'form' => $form
-        ]);
-    }
-
-    #[Route('/edit/{id}', name: 'edit', methods: [Request::METHOD_GET, Request::METHOD_POST])]
-    public function editEventForm(Event $event, Request $request): Response
-    {
-        $form = $this->createForm(EventType::class, $event);
-        $form->handleRequest($request);
-        if($form->isSubmitted() && $form->isValid( )) {
-            return $this->redirectToRoute('app_event_show', [
-                'id' => $event->getId()
-            ]);
-        }
-        return $this->render('event/edit.html.twig', [
-            'form' => $form
+        return $this->render('event/edit.html.twig',[
+            'form' => $form,
+            'event' => $event
         ]);
     }
 }

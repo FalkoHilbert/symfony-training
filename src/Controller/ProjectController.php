@@ -2,9 +2,12 @@
 
 namespace App\Controller;
 
+use App\Entity\Event;
 use App\Entity\Project;
 use App\Form\ProjectType;
 use App\Repository\ProjectRepository;
+use App\Security\Voter\CreatedVoter;
+use App\Security\Voter\EditVoter;
 use DateTimeImmutable;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -32,12 +35,23 @@ class ProjectController extends AbstractController
     }
 
     #[Route('/new', name: 'new', methods: [Request::METHOD_GET, Request::METHOD_POST])]
-    public function new(Request $request, EntityManagerInterface $entityManager): Response
+    #[Route('/{id}/edit', name: 'edit', methods: [Request::METHOD_GET, Request::METHOD_POST])]
+    public function new(
+        Request $request,
+        EntityManagerInterface $entityManager,
+        Project $project = null
+    ): Response
     {
-        $project = new Project();
+        if($project instanceof Project )
+        {
+            $this->denyAccessUnlessGranted(EditVoter::EDIT, $project);
+        }
+
+        $project = $project ?? new Project();
         $form = $this->createForm(ProjectType::class, $project);
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
+            $project->setCreatedBy($this->getUser());
             $project->setCreatedAt(new DateTimeImmutable());
             $entityManager->persist($project);
             $entityManager->flush();
@@ -45,25 +59,9 @@ class ProjectController extends AbstractController
                 'id' => $project->getId(),
             ]);
         }
-        return $this->render('project/new.html.twig', [
-            'form' => $form
-        ]);
-    }
-
-    #[Route('/{id}/edit', name: 'edit', methods: [Request::METHOD_GET, Request::METHOD_POST])]
-    public function edit(Project $project, Request $request, EntityManagerInterface $entityManager): Response
-    {
-        $form = $this->createForm(ProjectType::class, $project);
-        $form->handleRequest($request);
-        if ($form->isSubmitted() && $form->isValid()) {
-            $project->setUpdatedAt(new DateTimeImmutable());
-            $entityManager->flush();
-            return $this->redirectToRoute('app_project_show', [
-                'id' => $project->getId(),
-            ]);
-        }
         return $this->render('project/edit.html.twig', [
-            'form' => $form
+            'form' => $form,
+            'project' => $project,
         ]);
     }
 }

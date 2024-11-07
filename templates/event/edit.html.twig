@@ -1,14 +1,16 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Edit Event: {{ event.name }}{% endblock %}
+{% block title %}Create Event{% endblock %}
 
 {% block body %}
     <section class="container row row-cols-1">
         <div class="col-md-8 mx-auto">
-            <h1>Edit Event: {{ event.name }}</h1>
+            <h1>New event</h1>
         </div>
 
-        {{ include('includes/_form.html.twig', {button_label: 'Save'}) }}
+        {{ include('includes/_form.html.twig', {button_label: 'Save', back_link_route: 'app_event_show', id: (event ? event.id : null) }) }}
     </section>
 {% endblock %}
+
+
 

@@ -1,6 +1,13 @@
 <div class="col-md-8 mx-auto">
     {{ form_start(form) }}
     {{ form_widget(form) }}
-    <button type="submit" class="btn btn-primary">{{ button_label|default('Send') }}</button>
+    <div class="d-flex justify-content-between">
+        {% if back_link_route is defined and id is defined and id is not null %}
+            <a href="{{ path(back_link_route, {id: id})}}">
+                <button class="btn text-white" style="background-color: limegreen;">Back</button>
+            </a>
+        {% endif %}
+        <button type="submit" class="btn btn-primary">{{ button_label|default('Send') }}</button>
+    </div>
     {{ form_end(form, { render_rest: false }) }}
 </div>

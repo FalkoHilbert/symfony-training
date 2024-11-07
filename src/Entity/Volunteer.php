@@ -10,7 +10,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Component\Validator\Context\ExecutionContextInterface;
 
 #[ORM\Entity(repositoryClass: VolunteerRepository::class)]
-class Volunteer
+class Volunteer implements \JsonSerializable
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
@@ -177,5 +177,21 @@ class Volunteer
                 ->atPath('event')
                 ->addViolation();
         }
+    }
+
+    public function jsonSerialize(): array
+    {
+        return [
+            'id' => $this->getId(),
+            'startAt' => $this->getStartAt(),
+            'entAt' => $this->getEntAt(),
+            'eventId' => $this->getEvent()?->getId(),
+            'event' => $this->getEvent()?->getName(),
+            'projectId' => $this->getProject()?->getId(),
+            'project' => $this->getProject()?->getName(),
+            'forUserId' => $this->getForUser()?->getId(),
+            'forUser' => $this->getForUser()?->getEmail(),
+            'organizationIds' => $this->getOrganizations()->map(fn(Organization $organization) => $organization->getId())->toArray(),
+        ];
     }
 }

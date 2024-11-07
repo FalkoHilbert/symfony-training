@@ -10,7 +10,7 @@ use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: ProjectRepository::class)]
-class Project
+class Project implements CreatedByInterface, HasOrganizationsInterface
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
@@ -53,6 +53,10 @@ class Project
      */
     #[ORM\OneToMany(targetEntity: Volunteer::class, mappedBy: 'project', orphanRemoval: true)]
     private Collection $volunteers;
+
+    #[ORM\ManyToOne(inversedBy: 'projects')]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?User $createdBy = null;
 
     public function __construct()
     {
@@ -194,6 +198,18 @@ class Project
                 $volunteer->setProject(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getCreatedBy(): ?User
+    {
+        return $this->createdBy;
+    }
+
+    public function setCreatedBy(?User $createdBy): static
+    {
+        $this->createdBy = $createdBy;
 
         return $this;
     }
