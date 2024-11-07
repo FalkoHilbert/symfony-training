@@ -2,7 +2,9 @@
 
 namespace App\User\Event;
 
-class UserRegisterEvent
+use Symfony\Contracts\EventDispatcher\Event;
+
+class UserRegisterEvent extends Event
 {
     public function __construct(
         private int $userId,
