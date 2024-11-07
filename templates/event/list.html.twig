@@ -13,7 +13,9 @@
                     </div>
                     <div class="col-auto">
                         {% block event_filter_new_button %}
-                            <a href="{{ path('app_event_new') }}" class="btn btn-primary">Create new event</a>
+                            {% if is_granted('ROLE_WEBSITE') or is_granted('ROLE_ORGANIZER') %}
+                                <a href="{{ path('app_event_new') }}" class="btn btn-primary">Create new event</a>
+                            {% endif %}
                         {% endblock %}
                     </div>
                 </div>

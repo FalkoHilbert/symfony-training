@@ -35,7 +35,15 @@ security:
     # Note: Only the *first* access control that matches will be used
     access_control:
         - { path: ^/(index|contact|login|register), roles: PUBLIC_ACCESS }
+        - { path: ^/(projects|events)/new, roles: [ROLE_WEBSITE, ROLE_ORGANIZER]}
         - { path: ^/, roles: IS_AUTHENTICATED }
+
+    role_hierarchy:
+        ROLE_USER: ~
+        ROLE_WEBSITE: [ROLE_USER]
+        ROLE_VOLUNTEER: [ROLE_USER]
+        ROLE_ORGANIZER: [ROLE_VOLUNTEER]
+        ROLE_ADMIN: [ROLE_ORGANIZER, ROLE_WEBSITE]
 
 when@test:
     security:

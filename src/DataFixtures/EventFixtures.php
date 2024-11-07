@@ -26,9 +26,9 @@ class EventFixtures extends Fixture implements DependentFixtureInterface
                 $event = (new Event())
                     ->setName($faker->words(3, true))
                     ->setDescription($faker->realText(200))
-                    ->setAccessible($faker->boolean())
-                    ->setStartAt(DateTimeImmutable::createFromMutable($faker->dateTimeBetween('-1 month', '+1 month')))
-                    ->setEndAt(DateTimeImmutable::createFromMutable($faker->dateTimeBetween('+1 month', '+2 month')))
+                    ->setIsAccessible($faker->boolean())
+                    ->setStartDate(DateTimeImmutable::createFromMutable($faker->dateTimeBetween('-1 month', '+1 month')))
+                    ->setEndDate(DateTimeImmutable::createFromMutable($faker->dateTimeBetween('+1 month', '+2 month')))
                     ->setProject(
                         $this->getReference(ProjectFixtures::PROJECT_PREFIX . random_int(1, ProjectFixtures::NUMBER_OF_PROJECTS))
                     )
